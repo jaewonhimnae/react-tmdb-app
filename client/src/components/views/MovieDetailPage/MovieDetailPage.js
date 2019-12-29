@@ -39,7 +39,8 @@ function MovieDetailPage(props) {
         <div>
             {/* Main Image */}
             {Movie &&
-                <MainImage image={`${IMAGE_URL}w1280${Movie.backdrop_path && Movie.backdrop_path}`}
+                <MainImage
+                    image={`${IMAGE_URL}w1280${Movie.backdrop_path && Movie.backdrop_path}`}
                     title={Movie.original_title} text={Movie.overview} />
             }
 
