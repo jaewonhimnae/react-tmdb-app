@@ -4,6 +4,7 @@ import { API_URL, API_KEY, IMAGE_BASE_URL, IMAGE_SIZE, POSTER_SIZE } from '../..
 import MainImage from './Sections/MainImage'
 import GridCard from '../../commons/GridCards'
 const { Title } = Typography;
+
 function LandingPage() {
     const buttonRef = useRef(null);
 
@@ -70,7 +71,6 @@ function LandingPage() {
                     title={MainMovieImage.original_title}
                     text={MainMovieImage.overview}
                 />
-
             }
 
             <div style={{ width: '85%', margin: '1rem auto' }}>
