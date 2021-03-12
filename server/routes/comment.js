@@ -7,7 +7,7 @@ const { authForCmt } = require("../middleware/authForCmt");
 //             Subscribe
 //=================================
 
-router.post("/saveComment", authForCmt, (req, res) => {
+router.post("/saveComment", (req, res) => {
 
     const comment = new Comment(req.body)
 
