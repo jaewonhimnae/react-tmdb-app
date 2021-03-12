@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import LikeDislikes from './LikeDislikes';
 const { TextArea } = Input;
 function SingleComment(props) {
+
     const user = useSelector(state => state.user);
     const [CommentValue, setCommentValue] = useState("")
     const [OpenReply, setOpenReply] = useState(false)
@@ -20,12 +21,16 @@ function SingleComment(props) {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        const variables = {
-            writer: user.userData._id,
+        let variables = {
+            writer: '',
             postId: props.postId,
             responseTo: props.comment._id,
             content: CommentValue
         }
+        if (user.userData && !user.userData.isAuth)
+            variables.writer = "6048876615b38630f0a1dabb";
+        else
+            variables.writer = user.userData._id;
 
 
         Axios.post('/api/comment/saveComment', variables)
@@ -44,7 +49,7 @@ function SingleComment(props) {
         <LikeDislikes comment commentId={props.comment._id} userId={localStorage.getItem('userId')} />,
         <span onClick={openReply} key="comment-basic-reply-to">Reply to </span>
     ]
-
+    // console.log(props);
     return (
         <div>
             <Comment

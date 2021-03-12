@@ -17,16 +17,6 @@ function Comments(props) {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        
-        // if (user.userData && !user.userData.isAuth) {
-        //     return alert('Please Log in first');
-        // }
-        
-        // const variables = {
-        //     content: Comment,
-        //     writer: user.userData._id,
-        //     postId: props.postId
-        // }
 
         let variables = {
             content: Comment,
@@ -39,7 +29,7 @@ function Comments(props) {
         else
             variables.writer = user.userData._id;
 
-        console.log(variables)
+        // console.log(variables)
 
         axios.post('/api/comment/saveComment', variables)
             .then(response => {

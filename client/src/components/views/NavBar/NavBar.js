@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import LeftMenu from './Sections/LeftMenu';
 import RightMenu from './Sections/RightMenu';
+import SearchBar from './Sections/SearchBar';
 import { Drawer, Button, Icon } from 'antd';
 import './Sections/Navbar.css';
 const Logo = require('../../../assets/images/Logo.png');
@@ -21,13 +22,20 @@ function NavBar() {
       <div className="menu__logo">
         <a href="/"><img src={Logo} alt="Logo" style={{ width: '100%', marginTop: '-5px' }} /></a>
       </div>
+
       <div className="menu__container">
         <div className="menu_left">
           <LeftMenu mode="horizontal" />
         </div>
+        
+        <div className="searchBar">
+          <SearchBar />
+        </div>
+
         <div className="menu_rigth">
           <RightMenu mode="horizontal" />
         </div>
+
         <Button
           className="menu__mobile-button"
           type="primary"
@@ -35,6 +43,7 @@ function NavBar() {
         >
           <Icon type="align-right" />
         </Button>
+
         <Drawer
           title="Basic Drawer"
           placement="right"
@@ -46,6 +55,7 @@ function NavBar() {
           <LeftMenu mode="inline" />
           <RightMenu mode="inline" />
         </Drawer>
+
       </div>
     </nav>
   )

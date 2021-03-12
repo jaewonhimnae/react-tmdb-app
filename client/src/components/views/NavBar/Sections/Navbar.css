@@ -36,13 +36,19 @@
   border-bottom: none;
 }
 
-.menu__container .menu_left {
+.menu__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* .menu__container .menu_left {
   float: left;
 }
 
 .menu__container .menu_rigth {
   float: right;
-}
+} */
 
 .menu__mobile-button {
   float: right;
@@ -84,4 +90,6 @@
   .menu__logo a {
     padding: 10px 20px;
   }
+
+
 }
