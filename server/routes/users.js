@@ -70,4 +70,14 @@ router.get("/logout", auth, (req, res) => {
     });
 });
 
+router.post("/update", auth, (req, res) => {
+    //let info = req.body;
+    User.findOneAndUpdate({ _id: req.user._id }, { $set: req.body }, (err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).send({
+            success: true
+        });
+    });
+});
+
 module.exports = router;
