@@ -1,0 +1,10 @@
+.profile-avatar {
+    margin-bottom: 40px;
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+}
+
+.profile-avatar .ant-btn {
+    margin-top: 15px;
+}

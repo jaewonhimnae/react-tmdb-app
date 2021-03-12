@@ -9,7 +9,7 @@ const Upload = require('../../../../assets/images/upload.png');
 
 function RightMenu(props) {
   const user = useSelector(state => state.user)
-
+  // console.log(user);
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then(response => {
       if (response.status === 200) {
@@ -34,6 +34,10 @@ function RightMenu(props) {
   } else {
     return (
       <Menu mode={props.mode}>
+        <Menu.Item>
+          <a href="/profile">View profile</a>
+        </Menu.Item>
+
         <Menu.Item key="logout">
           <a onClick={logoutHandler}>Logout</a>
         </Menu.Item>
