@@ -26,6 +26,12 @@ const userSchema = mongoose.Schema({
         default: 0 
     },
     image: String,
+    destination: {
+        type: String,
+    },
+    phoneNumber: {
+        type: String,
+    },
     token : {
         type: String,
     },
