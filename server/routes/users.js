@@ -80,7 +80,7 @@ router.post("/update", auth, (req, res) => {
         phoneNumber: req.body.phoneNumber
     }
     for(let prop in info) if(!info[prop]) delete info[prop];
-    User.findOneAndUpdate({ _id: req.user._id }, params, (err, doc) => {
+    User.findOneAndUpdate({ _id: req.user._id }, info, (err, doc) => {
         if (err) return res.json({ success: false, err });
         return res.status(200).send({
             success: true
