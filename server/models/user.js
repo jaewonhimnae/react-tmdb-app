@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
         default: 0 
     },
     image: String,
-    destination: {
+    address: {
         type: String,
         default: null
     },

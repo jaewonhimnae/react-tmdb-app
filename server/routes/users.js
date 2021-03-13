@@ -18,7 +18,7 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
-        destination: req.user.destination,
+        address: req.user.address,
         phoneNumber: req.user.phoneNumber
     });
 });
@@ -76,7 +76,7 @@ router.post("/update", auth, (req, res) => {
         name: req.body.name,
         lastname: req.body.lastname,
         image: req.body.image,
-        destination: req.body.destination,
+        address: req.body.address,
         phoneNumber: req.body.phoneNumber
     }
     User.findOneAndUpdate({ _id: req.user._id }, { $set: info }, (err, doc) => {
