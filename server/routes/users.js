@@ -79,7 +79,8 @@ router.post("/update", auth, (req, res) => {
         address: req.body.address,
         phoneNumber: req.body.phoneNumber
     }
-    User.findOneAndUpdate({ _id: req.user._id }, { $set: info }, (err, doc) => {
+    for(let prop in params) if(!params[prop]) delete params[prop];
+    User.findOneAndUpdate({ _id: req.user._id }, params, (err, doc) => {
         if (err) return res.json({ success: false, err });
         return res.status(200).send({
             success: true
