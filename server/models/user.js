@@ -28,9 +28,11 @@ const userSchema = mongoose.Schema({
     image: String,
     destination: {
         type: String,
+        default: null
     },
     phoneNumber: {
         type: String,
+        default: null
     },
     token : {
         type: String,
