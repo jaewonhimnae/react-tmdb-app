@@ -3,6 +3,7 @@ import {
     REGISTER_USER,
     AUTH_USER,
     LOGOUT_USER,
+    VIEW_USER
 } from '../_actions/types';
  
 

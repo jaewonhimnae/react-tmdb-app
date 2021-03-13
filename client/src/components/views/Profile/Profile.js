@@ -1,14 +1,17 @@
 import React, { useReducer, useState }  from 'react';
 import './Profile.css';
+import axios from 'axios';
 
 import moment from "moment";
-import { Formik } from 'formik';
+import { ErrorMessage, Formik } from 'formik';
 import * as Yup from 'yup';
-import { registerUser } from "../../../_actions/user_actions";
+
 import { useDispatch, useSelector } from "react-redux";
 
 import {  Form,  Input,  Button,  Avatar,  Upload, message } from 'antd';
 import { LoadingOutline, PlusOutline, UploadOutline, CheckOutline } from '@ant-design/icons';
+
+const imageToBase64 = require('image-to-base64');
 
 const formItemLayout = {
   labelCol: {
@@ -36,8 +39,15 @@ const tailFormItemLayout = {
 function Profile(props) {
   
     const dispatch = useDispatch();
+    function auth(){
+      const request = axios.get(`/api/users/auth`).then(response => console.log(response));
+  
+      return {
+          payload: request
+      }
+    }
+
     const user = useSelector(state => state.user)
-    console.log(user);
 
     function beforeUpload(file) {
       const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -51,62 +61,134 @@ function Profile(props) {
       return isJpgOrPng && isLt2M;
     }
 
-    const uploadImage = async (e) => {
+    const uploadImage = (e) => {
       const file = e.target.files[0];
       if (beforeUpload(file) === false)
         return false;
-      const base64 = await convertBase64(file);
-      // console.log(base64);
+      const base64 = getBase64(file);
+      console.log(base64)
+      linkToImage(base64);
+      return base64
     };
 
-    const convertBase64 = (file) => {
-      return new Promise((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
+    function getBase64(file) {
+      var reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = function () {
+        console.log(reader.result.split(',')[1]);
+        return reader.result.split(',')[1];
+      };
+      reader.onerror = function (error) {
+        console.log('Error: ', error);
+        return
+      };
+   }
+    // const linkToImage = (base64) => {
+    //   var FormData = require('form-data');
+    //   var data = new FormData();
+    //   data.append('image', 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
 
-        fileReader.onload = () => {
-          resolve(fileReader.result);
-        };
+    //   var config = {
+    //     method: 'post',
+    //     url: 'https://api.imgur.com/3/image',
+    //     headers: { 
+    //       'Authorization': 'Client-ID 71ace28d96410a0', 
+    //       'Content-Type': 'application/json',
+    //       'Connection': 'keep-alive',
+    //       'Accept': '*/*',
+    //       'Accept-Encoding': 'gzip, deflate, br',
+    //     },
+    //     data : data
+    //   };
 
-        fileReader.onerror = (error) => {
-          reject(error);
-        };
-      });
+    //   axios(config)
+    //   .then(function (response) {
+    //     console.log(JSON.stringify(response.data));
+    //   })
+    //   .catch(function (error) {
+    //     console.log(error);
+    //   });
+    // }
+    const linkToImage =  (base64) => {
+      let data = new FormData();
+      data.append('image', base64);
+      try {
+        axios({
+          method: "post",
+          url: "https://api.imgur.com/3/image",
+          headers: { 
+            'Authorization' : 'Client-ID 71ace28d96410a0',
+            'Content-Type': 'application/json',
+            'Connection': 'keep-alive',
+            'Accept': '*/*',
+            'Accept-Encoding': 'gzip, deflate, br',
+          },
+          data: data,
+        })
+        .then((response) => {
+            //handle success
+            console.log(JSON.stringify(response.data));
+        })
+        .catch((error) => {
+            //handle error
+            console.log(error);
+        });
+      } catch (error) {
+        console.error(error);
+      }
     }
-    return (
 
-    <Formik
+    return (
+      user.userData ? 
+    (<Formik
+      initialValues={{
+        name: user.userData.name,
+        lastname: user.userData.lastname,
+        email: user.userData.email,
+        phoneNumber: user.userData.phoneNumber,
+        address: user.userData.address,
+        image: ''
+      }}
 
       validationSchema={Yup.object().shape({
         name: Yup.string()
-          .required('Name is required'),
+          .required('Name is required')
+          .matches(/^[aA-zZ0-9\s]+$/, "Only alphabets are allowed for this field "),
+        lastname: Yup.string()
+          .matches(/^[aA-zZ0-9\s]+$/, "Only alphabets are allowed for this field "),
         email: Yup.string()
+          .required('Email is required')
           .email('Email is invalid'),
-        password: Yup.string()
-          .min(6, 'Password must be at least 6 characters')
-          .required('Password is required'),
-        confirmPassword: Yup.string()
-          .oneOf([Yup.ref('password'), null], 'Passwords must match')
-          .required('Confirm Password is required')
+        phoneNumber: Yup.string()
+          .matches(/^[0-9]+$/, "That doesn't look like a phone number")
+          .max(10),
+        address: Yup.string()
+          .matches(/^[a-zA-z0-9,-/\s]+$/,  "That doesn't look like a address")
       })}
+
+      onSubmit = {(values) => {
+        console.log(values);
+        const res = axios.post(`/api/users/update`, values).then(
+          response => console.log(response)
+        );
+      }}
     >
 
         {   props => {
               const {
               values,
+              dirty,
               touched,
               errors,
-              dirty,
               isSubmitting,
               handleChange,
               handleBlur,
               handleSubmit,
-              handleReset,
               } = props;
 
             
               return (
-                user.userData ? (
+                
                   <div 
                     className="app" 
                   >
@@ -118,12 +200,15 @@ function Profile(props) {
                     </div>
 
                       <Form style={{ minWidth: '375px' }} {...formItemLayout} onSubmit={handleSubmit} >
-                        <Form.Item label="Name">
+
+                        {/* Field name */}
+                        <Form.Item required label="Name">
                             <Input
                               id="name"
                               type="text"
-                              value={user.userData.name}
+                              value={values.name}
                               onChange={handleChange}
+                              onBlur={handleBlur}
                               className={
                                   errors.name && touched.name ? 'text-input error' : 'text-input'
                               }
@@ -134,7 +219,21 @@ function Profile(props) {
                             }
                         </Form.Item>
 
-                        <Form.Item label="Email"  validateStatus={errors.email && touched.email ? "error" : 'success'}>
+                        {/* Field lastname */}
+                        <Form.Item label="Last name">
+                            <Input
+                              id="lastname"
+                              type="text"
+                              value={values.lastname}
+                              onChange={handleChange}
+                            />
+                            {
+                              errors.lastname && touched.lastname && 
+                                (<div className="input-feedback">{errors.lastname}</div>)
+                            }
+                        </Form.Item>
+                          {/* Field email */}
+                        <Form.Item required label="Email"  validateStatus={errors.email && touched.email ? "error" : 'success'}>
                             <Input
                               id="email"
                               type="email"
@@ -150,29 +249,62 @@ function Profile(props) {
                                 (<div className="input-feedback">{errors.email}</div>)
                             }
                         </Form.Item>
-                        
+                            {/* Field address */}
+                        <Form.Item label="Address">
+                            <Input
+                              id="address"
+                              type="text"
+                              value={values.address}
+                              onChange={handleChange}
+                              className={
+                                  errors.address && touched.address ? 'text-input error' : 'text-input'
+                              }
+                            />
+                            {
+                              errors.address && touched.address && 
+                                (<div className="input-feedback">{errors.address}</div>)
+                            }
+                        </Form.Item>
+                            {/* phoneNumber */}
+                        <Form.Item label="Phone number">
+                            <Input
+                              id="phoneNumber"
+                              type="text"
+                              value={values.phoneNumber}
+                              onChange={handleChange}
+                              className={
+                                  errors.phoneNumber && touched.phoneNumber ? 'text-input error' : 'text-input'
+                              }
+                            />
+                            {
+                              errors.phoneNumber && touched.phoneNumber && 
+                                (<div className="input-feedback">{errors.phoneNumber}</div>)
+                            }
+                        </Form.Item>
+
                         <Form.Item label="Upload">
                             <input 
                               type="file"
-                              id="file"
+                              id="image"
                               onChange={(e) => {
-                                // console.log(e.target.files)
-                                uploadImage(e);
+                                const base64 = uploadImage(e);
+                                linkToImage(base64);
                               }}
+                              value={values.image}
                             />
                         </Form.Item>
 
                         <Form.Item {...tailFormItemLayout}>
-                            <Button type="primary" disabled={isSubmitting}>
+                            <Button type="primary" disabled={isSubmitting} onClick={handleSubmit}>
                             Submit
                             </Button>
                         </Form.Item>
                       </Form>
-                  </div>) : ('')
+                  </div>
             ); 
             
         }}
-    </Formik>
+    </Formik>) : ('')
   );
 };
 
