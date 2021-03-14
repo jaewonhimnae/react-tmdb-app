@@ -68,6 +68,10 @@
   padding: 14px 24px !important;
 }
 
+.search-input {
+  width: 450px;
+}
+
 @media (max-width: 767px) {
   .menu__mobile-button {
     display: inline-block !important;

@@ -3,8 +3,7 @@ import {
     LOGIN_USER,
     REGISTER_USER,
     AUTH_USER,
-    LOGOUT_USER,
-    VIEW_USER
+    LOGOUT_USER
 } from './types';
 import { USER_SERVER } from '../components/Config.js';
 
@@ -49,3 +48,5 @@ export function logoutUser(){
         payload: request
     }
 }
+
+

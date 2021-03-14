@@ -1,17 +1,14 @@
-import React, { useReducer, useState }  from 'react';
+import React  from 'react';
 import './Profile.css';
 import axios from 'axios';
 
-import moment from "moment";
-import { ErrorMessage, Formik } from 'formik';
+import { Formik } from 'formik';
 import * as Yup from 'yup';
 
 import { useDispatch, useSelector } from "react-redux";
 
-import {  Form,  Input,  Button,  Avatar,  Upload, message } from 'antd';
-import { LoadingOutline, PlusOutline, UploadOutline, CheckOutline } from '@ant-design/icons';
+import {  Form,  Input,  Button,  Avatar, message } from 'antd';
 
-const imageToBase64 = require('image-to-base64');
 
 const formItemLayout = {
   labelCol: {
@@ -36,17 +33,7 @@ const tailFormItemLayout = {
   },
 };
 
-function Profile(props) {
-  
-    const dispatch = useDispatch();
-    function auth(){
-      const request = axios.get(`/api/users/auth`).then(response => console.log(response));
-  
-      return {
-          payload: request
-      }
-    }
-
+function Profile() {
     const user = useSelector(state => state.user)
 
     function beforeUpload(file) {
@@ -65,77 +52,58 @@ function Profile(props) {
       const file = e.target.files[0];
       if (beforeUpload(file) === false)
         return false;
-      const base64 = getBase64(file);
-      console.log(base64)
-      linkToImage(base64);
-      return base64
+      linkToImage(file)
     };
 
-    function getBase64(file) {
-      var reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = function () {
-        console.log(reader.result.split(',')[1]);
-        return reader.result.split(',')[1];
-      };
-      reader.onerror = function (error) {
-        console.log('Error: ', error);
-        return
-      };
-   }
-    // const linkToImage = (base64) => {
-    //   var FormData = require('form-data');
-    //   var data = new FormData();
-    //   data.append('image', 'R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
-
-    //   var config = {
-    //     method: 'post',
-    //     url: 'https://api.imgur.com/3/image',
-    //     headers: { 
-    //       'Authorization': 'Client-ID 71ace28d96410a0', 
-    //       'Content-Type': 'application/json',
-    //       'Connection': 'keep-alive',
-    //       'Accept': '*/*',
-    //       'Accept-Encoding': 'gzip, deflate, br',
-    //     },
-    //     data : data
+    // function getBase64(file) {
+    //   var reader = new FileReader();
+    //   reader.readAsDataURL(file);
+    //   reader.onload = function () {
+    //     console.log(reader.result.split(',')[1]);
+    //     return reader.result.split(',')[1];
     //   };
+    //   reader.onerror = function (error) {
+    //     console.log('Error: ', error);
+    //     return
+    //   };
+    //  }
 
-    //   axios(config)
-    //   .then(function (response) {
-    //     console.log(JSON.stringify(response.data));
-    //   })
-    //   .catch(function (error) {
-    //     console.log(error);
-    //   });
-    // }
-    const linkToImage =  (base64) => {
-      let data = new FormData();
-      data.append('image', base64);
-      try {
-        axios({
-          method: "post",
-          url: "https://api.imgur.com/3/image",
-          headers: { 
-            'Authorization' : 'Client-ID 71ace28d96410a0',
-            'Content-Type': 'application/json',
-            'Connection': 'keep-alive',
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-          },
-          data: data,
-        })
-        .then((response) => {
-            //handle success
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            //handle error
-            console.log(error);
-        });
-      } catch (error) {
-        console.error(error);
+    const linkToImage =  (file) => {
+      const r = new XMLHttpRequest()
+      const d = new FormData()
+      // const e = document.getElementById('image').files[0]
+      var u
+
+      d.append('image', file)
+
+      r.open('POST', 'https://api.imgur.com/3/image/')
+      r.setRequestHeader('Authorization', `Client-ID 71ace28d96410a0`)
+      r.onreadystatechange = function () {
+        if(r.status === 200 && r.readyState === 4) {
+          let res = JSON.parse(r.responseText)
+          u = `https://i.imgur.com/${res.data.id}.png`
+          // console.log (u);
+          const d = document.createElement('div')
+          d.className = 'image'
+          document.getElementsByTagName('body')[0].appendChild(d)
+
+          const i = document.createElement('img')
+          i.className = 'image-src'
+          i.src = u
+          document.getElementsByClassName('image')[0].appendChild(i)
+
+          const a = document.createElement('a')
+          a.className= 'image-link'
+          a.href = u
+          document.getElementsByClassName('image')[0].appendChild(a)
+
+          const p = document.createElement('p')
+          p.className = 'image-url'
+          p.innerHTML = u
+          document.getElementsByClassName('image-link')[0].appendChild(p)
+        }
       }
+      r.send(d)
     }
 
     return (
@@ -167,9 +135,9 @@ function Profile(props) {
       })}
 
       onSubmit = {(values) => {
-        console.log(values);
+        // console.log(values);
         const res = axios.post(`/api/users/update`, values).then(
-          response => console.log(response)
+          response => console.log("Success")
         );
       }}
     >
@@ -287,8 +255,7 @@ function Profile(props) {
                               type="file"
                               id="image"
                               onChange={(e) => {
-                                const base64 = uploadImage(e);
-                                linkToImage(base64);
+                                uploadImage(e);
                               }}
                               value={values.image}
                             />

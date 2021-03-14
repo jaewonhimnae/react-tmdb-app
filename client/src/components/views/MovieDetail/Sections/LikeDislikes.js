@@ -32,7 +32,7 @@ function LikeDislikes(props) {
                     setLikes(response.data.likes.length)
 
                     //if I already click this like button or not 
-                    response.data.likes.map(like => {
+                    response.data.likes.forEach(like => {
                         if (like.userId === props.userId) {
                             setLikeAction('liked')
                         }
@@ -50,7 +50,7 @@ function LikeDislikes(props) {
                     setDislikes(response.data.dislikes.length)
 
                     //if I already click this like button or not 
-                    response.data.dislikes.map(dislike => {
+                    response.data.dislikes.forEach(dislike => {
                         if (dislike.userId === props.userId) {
                             setDislikeAction('disliked')
                         }

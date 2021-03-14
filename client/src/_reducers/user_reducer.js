@@ -2,8 +2,7 @@ import {
     LOGIN_USER,
     REGISTER_USER,
     AUTH_USER,
-    LOGOUT_USER,
-    VIEW_USER
+    LOGOUT_USER
 } from '../_actions/types';
  
 

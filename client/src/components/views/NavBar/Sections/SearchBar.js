@@ -1,25 +1,33 @@
-import React from 'react';
-import { Input, Space } from 'antd';
-import { AudioOutline } from '@ant-design/icons';
+import React, { useRef } from 'react';
+import { Input } from 'antd';
 
 function SearchBar(props) {
+    const { onSubmit } = props;
+
     const { Search } = Input;
+    const typingTimeoutRef = useRef(null);
 
-    // const suffix = (
-    //     <AudioOutline
-    //         style={{
-    //         fontSize: 16,
-    //         color: '#1890ff',
-    //         }}
-    //     />
-    // );
+    const onSearch = (value) => {
+        if (!onSubmit)
+            return
+        onSubmit(value);
+    };
 
-    const onSearch = value => console.log(value);
+    const handleSearchTerm = (e) => {
+        const value = e.target.value
+        if(typingTimeoutRef.current)
+            clearTimeout(typingTimeoutRef.current);
 
+        typingTimeoutRef.current = setTimeout(() => {
+            onSearch(value);
+        }, 500);
+    }
     return(
         <>
-            <Search 
-                placeholder="Search..." onSearch={onSearch} enterButton
+            <Search
+                className="search-input"
+                placeholder="Search..." enterButton onSearch={onSearch}
+                onChange={handleSearchTerm}
             />
         </>  
     )

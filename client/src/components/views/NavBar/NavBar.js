@@ -6,7 +6,9 @@ import { Drawer, Button, Icon } from 'antd';
 import './Sections/Navbar.css';
 const Logo = require('../../../assets/images/Logo.png');
 
-function NavBar() {
+function NavBar(props) {
+  const { onSubmit } = props;
+
   const [visible, setVisible] = useState(false)
 
   const showDrawer = () => {
@@ -29,7 +31,7 @@ function NavBar() {
         </div>
         
         <div className="searchBar">
-          <SearchBar />
+          <SearchBar onSubmit={onSubmit}/>
         </div>
 
         <div className="menu_rigth">

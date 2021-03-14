@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { List, Avatar, Row, Col, Button } from 'antd';
+import { Row, Button } from 'antd';
 import axios from 'axios';
 
 import Comments from './Sections/Comments'
