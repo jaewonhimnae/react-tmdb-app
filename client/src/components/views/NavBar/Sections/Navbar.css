@@ -95,5 +95,7 @@
     padding: 10px 20px;
   }
 
-
+  .search-input {
+    width: 250px;
+  }
 }

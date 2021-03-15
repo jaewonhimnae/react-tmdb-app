@@ -1,17 +1,54 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import axios from 'axios'
 import { Typography, Row } from 'antd';
 import { API_URL, API_KEY, IMAGE_BASE_URL, IMAGE_SIZE, POSTER_SIZE } from '../../Config'
 import MainImage from './Sections/MainImage'
 import GridCard from '../../commons/GridCards'
+import { useSelector } from 'react-redux'
+
 const { Title } = Typography;
 
-function LandingPage(props) {
-    const { 
-        searchTerm, searching, 
-        Movies, setMovies,
-        MainMovieImage, setMainMovieImage,
-        Loading, setLoading,
-        CurrentPage, setCurrentPage } = props;
+function LandingPage() {
+    const [searching, setSearching] = useState(false)
+    const [Movies, setMovies] = useState([])
+    const [MainMovieImage, setMainMovieImage] = useState(null)
+    const [Loading, setLoading] = useState(true)
+    const [CurrentPage, setCurrentPage] = useState(0)
+
+    let searchTerm = useSelector(state => state.searchTerm)
+    
+    const handleSearchMovies = (searchTerm, page = 1) => {
+        if (searchTerm) {
+            axios.get(`${API_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}&page=${page}&include_adult=false`)
+            .then(response => {
+            if (response.status === 200) {
+                setSearching(true)
+                const result = response.data
+                try {
+                if (result.page === 1)
+                    setMovies([...result.results])
+                else
+                    setMovies([...Movies, ...result.results])
+                setMainMovieImage(MainMovieImage || result.results[0])
+                setCurrentPage(result.page)
+                setLoading(false)
+                }
+                catch (error){
+                    // console.error('Error:', error)
+                }
+            }
+            });
+        }
+        else {
+            setSearching(false);
+        }
+    }
+    useEffect(() => {
+        if(searchTerm !== null || searchTerm !== ''){
+            handleSearchMovies(searchTerm)
+        }
+    }, [searchTerm])
+
     const buttonRef = useRef(null);
 
     useEffect(() => {
@@ -43,7 +80,6 @@ function LandingPage(props) {
         else 
             endpoint = `${API_URL}search/movie?api_key=${API_KEY}&language=en-US&query=${searchTerm}&page=${CurrentPage + 1}&include_adult=false`;
         fetchMovies(endpoint);
-
     }
 
     const handleScroll = () => {
@@ -54,7 +90,7 @@ function LandingPage(props) {
         const windowBottom = windowHeight + window.pageYOffset;
         if (windowBottom >= docHeight - 1) {
 
-            // loadMoreItems()
+            loadMoreItems()
             // console.log('clicked')
             buttonRef.current.click();
 
