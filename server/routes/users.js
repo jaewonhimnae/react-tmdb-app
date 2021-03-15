@@ -18,6 +18,8 @@ router.get("/auth", auth, (req, res) => {
         lastname: req.user.lastname,
         role: req.user.role,
         image: req.user.image,
+        address: req.user.address,
+        phoneNumber: req.user.phoneNumber
     });
 });
 
@@ -52,7 +54,7 @@ router.post("/login", (req, res) => {
                     .cookie("w_auth", user.token)
                     .status(200)
                     .json({
-                        loginSuccess: true, userId: user._id
+                        loginSuccess: true, userId: user._id, token: user.token
                     });
             });
         });
@@ -61,6 +63,24 @@ router.post("/login", (req, res) => {
 
 router.get("/logout", auth, (req, res) => {
     User.findOneAndUpdate({ _id: req.user._id }, { token: "", tokenExp: "" }, (err, doc) => {
+        if (err) return res.json({ success: false, err });
+        return res.status(200).send({
+            success: true
+        });
+    });
+});
+
+router.post("/update", auth, (req, res) => {
+    let info = {
+        email: req.body.email,
+        name: req.body.name,
+        lastname: req.body.lastname,
+        image: req.body.image,
+        address: req.body.address,
+        phoneNumber: req.body.phoneNumber
+    }
+    for(let prop in info) if(!info[prop]) delete info[prop];
+    User.findOneAndUpdate({ _id: req.user._id }, info, (err, doc) => {
         if (err) return res.json({ success: false, err });
         return res.status(200).send({
             success: true

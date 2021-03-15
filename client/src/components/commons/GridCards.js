@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card, Avatar, Col, Typography, Row } from 'antd';
+import { Col} from 'antd';
 import { IMAGE_BASE_URL } from '../Config';
 
 function GridCards(props) {

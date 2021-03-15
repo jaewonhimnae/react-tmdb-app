@@ -6,10 +6,11 @@ import SingleComment from './SingleComment';
 import ReplyComment from './ReplyComment';
 const { TextArea } = Input;
 const { Title } = Typography;
+
 function Comments(props) {
     const user = useSelector(state => state.user)
     const [Comment, setComment] = useState("")
-
+    
     const handleChange = (e) => {
         setComment(e.currentTarget.value)
     }
@@ -17,16 +18,18 @@ function Comments(props) {
     const onSubmit = (e) => {
         e.preventDefault();
 
-        if (user.userData && !user.userData.isAuth) {
-            return alert('Please Log in first');
-        }
-
-        const variables = {
+        let variables = {
             content: Comment,
-            writer: user.userData._id,
+            writer: '',
             postId: props.postId
         }
-        console.log(variables)
+
+        if (user.userData && !user.userData.isAuth)
+            variables.writer = "6048876615b38630f0a1dabb";
+        else
+            variables.writer = user.userData._id;
+
+        // console.log(variables)
 
         axios.post('/api/comment/saveComment', variables)
             .then(response => {
@@ -45,7 +48,7 @@ function Comments(props) {
             <Title level={3} > Share your opinions about {props.movieTitle} </Title>
             <hr />
             {/* Comment Lists  */}
-            {console.log(props.CommentLists)}
+            {/* {console.log(props.CommentLists)} */}
 
             {props.CommentLists && props.CommentLists.map((comment, index) => (
                 (!comment.responseTo &&

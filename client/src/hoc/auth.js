@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { auth } from '../_actions/user_actions';
 import { useSelector, useDispatch } from "react-redux";
+import { Redirect } from 'react-router';
 
 export default function (ComposedClass, reload, adminRoute = null) {
     function AuthenticationCheck(props) {
@@ -12,10 +13,13 @@ export default function (ComposedClass, reload, adminRoute = null) {
 
             dispatch(auth()).then(async response => {
                 if (await !response.payload.isAuth) {
+                    // window.alert(response.payload.isAuth)
                     if (reload) {
                         props.history.push('/register_login')
+                        
                     }
-                } else {
+                } 
+                else {
                     if (adminRoute && !response.payload.isAdmin) {
                         props.history.push('/')
                     }

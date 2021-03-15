@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Typography, Popover, Button } from 'antd';
+import { Typography, Popover } from 'antd';
 import axios from 'axios';
 import './favorite.css';
 import { useSelector } from 'react-redux';
@@ -22,7 +22,7 @@ function FavoritePage() {
         axios.post('/api/favorite/getFavoredMovie', variable)
             .then(response => {
                 if (response.data.success) {
-                    console.log(response.data.favorites)
+                    // console.log(response.data.favorites)
                     setFavorites(response.data.favorites)
                     setLoading(false)
                 } else {
@@ -55,7 +55,7 @@ function FavoritePage() {
         const content = (
             <div>
                 {favorite.moviePost ?
-                    <img src={`${IMAGE_BASE_URL}${POSTER_SIZE}${favorite.moviePost}`} />
+                    <img src={`${IMAGE_BASE_URL}${POSTER_SIZE}${favorite.moviePost}`} alt=""/>
                     : "no image"}
             </div>
         );
